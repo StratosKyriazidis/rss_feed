@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rss_feed/screens/login_screen.dart';
 import 'firebase/firebase_main.dart';
 import 'firebase/firebase_options.dart';
+import './screens/email_login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,18 +43,33 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('RSS Feed'),
+      ),
       backgroundColor: Colors.black,
       body: Consumer<FirebaseMain>(
-        builder: (context, value, child) {
-          value.checkLoginStatus();
+        builder: (context, value, _) {
+          Future.delayed(Duration.zero, () async {
+            value.checkLoginStatus();
+          });
           if (value.loggedIn == false) {
             return LoginScreen(
-              anonym: value.callAnonymousSignin,
-              empass: value.foo,
-              goog: value.callGoogleSignin,
+              anonymous: value.callAnonymousSignin,
+              emailPassword: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EmailLogin()),
+                );
+              },
+              google: value.callGoogleSignin,
             );
           } else {
-            return Container();
+            return Center(
+              child: ElevatedButton(
+                onPressed: () => value.signOut(),
+                child: const Text('Sign out'),
+              ),
+            );
           }
         },
       ),

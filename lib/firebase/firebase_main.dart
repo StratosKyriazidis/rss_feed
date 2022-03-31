@@ -9,13 +9,14 @@ class FirebaseMain with ChangeNotifier {
   }
 
   bool? loggedIn;
+  FirebaseAuth? auth;
 
   FirebaseMain() {
-    FirebaseAuth auth = FirebaseAuth.instance;
+    auth = FirebaseAuth.instance;
   }
 
   void checkLoginStatus() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    auth!.authStateChanges().listen((User? user) {
       if (user == null) {
         loggedIn = false;
       } else {
@@ -26,8 +27,7 @@ class FirebaseMain with ChangeNotifier {
   }
 
   Future<void> anonymousSignin() async {
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInAnonymously();
+    UserCredential userCredential = await auth!.signInAnonymously();
   }
 
   void callAnonymousSignin() {
@@ -35,7 +35,42 @@ class FirebaseMain with ChangeNotifier {
     notifyListeners();
   }
 
-  void foo() {}
+  Future<String> validateLogin(String email, String password) async {
+    try {
+      UserCredential userCredential = await auth!
+          .signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        return 'user-not-found';
+      } else if (e.code == 'wrong-password') {
+        return 'wrong-password';
+      }
+    }
+    notifyListeners();
+    return 'all-clear';
+  }
+
+  Future<String> validateSignup(
+      String email, String password, String confirmPassword) async {
+    if (password == confirmPassword) {
+      try {
+        UserCredential userCredential = await auth!
+            .createUserWithEmailAndPassword(email: email, password: password);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          return 'weak-password';
+        } else if (e.code == 'email-already-in-use') {
+          return 'email-already-in-use';
+        }
+      } catch (e) {
+        return e.toString();
+      }
+    } else {
+      return 'unmatching-passwords';
+    }
+    notifyListeners();
+    return 'all-clear';
+  }
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
@@ -52,11 +87,16 @@ class FirebaseMain with ChangeNotifier {
     );
 
     // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    return await auth!.signInWithCredential(credential);
   }
 
   void callGoogleSignin() {
     signInWithGoogle();
+    notifyListeners();
+  }
+
+  Future<void> signOut() async {
+    await auth!.signOut();
     notifyListeners();
   }
 }
