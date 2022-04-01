@@ -11,9 +11,17 @@ class EmailSignupForm extends StatefulWidget {
 
 class _EmailSignupFormState extends State<EmailSignupForm> {
   final _formKey = GlobalKey<FormState>();
-  String _email = '';
-  String _password = '';
-  String _confirmPassword = '';
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,58 +29,52 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
       return Form(
         key: _formKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text('Email'),
             TextFormField(
-              onSaved: (value) {
-                _email = value.toString();
+              controller: _emailController,
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Enter your email',
+              ),
+              keyboardType: TextInputType.emailAddress,
+              validator: (newValue) => validateEmail(newValue),
+            ),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Enter your password',
+              ),
+              obscureText: true,
+              validator: (newValue) {
+                if (newValue == null || newValue.length < 6) {
+                  return 'Password must be over 6 characters';
+                }
+                return null;
               },
             ),
-            const Text('Password'),
             TextFormField(
-              onSaved: (value) {
-                _password = value.toString();
-              },
-            ),
-            const Text('Confirm Password'),
-            TextFormField(
-              onSaved: (value) {
-                _confirmPassword = value.toString();
+              controller: _confirmController,
+              decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Confirm password'),
+              obscureText: true,
+              validator: (newValue) {
+                if (newValue == null || newValue != _passwordController.text) {
+                  return 'Passwords must match';
+                }
+                return null;
               },
             ),
             ElevatedButton(
               onPressed: () {
-                _formKey.currentState!.save();
-                value.validateSignup(_email, _password, _confirmPassword);
-                // if (value
-                //         .validateSignup(_email, _password, _confirmPassword)
-                //         .toString() ==
-                //     'email-already-in-use') {
-                //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                //     content: Text('Email already in use'),
-                //   ));
-                //   _formKey.currentState!.reset();
-                // } else if (value
-                //         .validateSignup(_email, _password, _confirmPassword)
-                //         .toString() ==
-                //     'weak-password') {
-                //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                //     content: Text('Weak password'),
-                //   ));
-                //   _formKey.currentState!.reset();
-                // } else if (value
-                //         .validateSignup(_email, _password, _confirmPassword)
-                //         .toString() ==
-                //     'unmatching-passwords') {
-                //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                //     content: Text('Passwords in both fields must be the same'),
-                //   ));
-                //   _formKey.currentState!.reset();
-                // } else {
-                //   value.validateSignup(_email, _password, _confirmPassword);
-                // }
+                if (_formKey.currentState!.validate()) {
+                  value.emailSignup(
+                      _emailController.text, _passwordController.text);
+                  Navigator.pop(context);
+                }
               },
               child: const Text('Sign up'),
             ),
@@ -80,5 +82,18 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
         ),
       );
     });
+  }
+}
+
+String? validateEmail(String? value) {
+  String pattern =
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+      r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+      r"{0,253}[a-zA-Z0-9])?)*$";
+  RegExp regex = RegExp(pattern);
+  if (value == null || value.isEmpty || !regex.hasMatch(value)) {
+    return 'Enter a valid email address';
+  } else {
+    return null;
   }
 }

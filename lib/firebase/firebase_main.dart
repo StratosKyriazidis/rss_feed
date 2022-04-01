@@ -22,8 +22,8 @@ class FirebaseMain with ChangeNotifier {
       } else {
         loggedIn = true;
       }
+      notifyListeners();
     });
-    notifyListeners();
   }
 
   Future<void> anonymousSignin() async {
@@ -35,7 +35,7 @@ class FirebaseMain with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> validateLogin(String email, String password) async {
+  Future<String> emailLogin(String email, String password) async {
     try {
       UserCredential userCredential = await auth!
           .signInWithEmailAndPassword(email: email, password: password);
@@ -50,23 +50,18 @@ class FirebaseMain with ChangeNotifier {
     return 'all-clear';
   }
 
-  Future<String> validateSignup(
-      String email, String password, String confirmPassword) async {
-    if (password == confirmPassword) {
-      try {
-        UserCredential userCredential = await auth!
-            .createUserWithEmailAndPassword(email: email, password: password);
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          return 'weak-password';
-        } else if (e.code == 'email-already-in-use') {
-          return 'email-already-in-use';
-        }
-      } catch (e) {
-        return e.toString();
+  Future<String> emailSignup(String email, String password) async {
+    try {
+      UserCredential userCredential = await auth!
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        return 'weak-password';
+      } else if (e.code == 'email-already-in-use') {
+        return 'email-already-in-use';
       }
-    } else {
-      return 'unmatching-passwords';
+    } catch (e) {
+      return e.toString();
     }
     notifyListeners();
     return 'all-clear';

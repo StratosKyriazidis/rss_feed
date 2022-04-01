@@ -56,7 +56,7 @@ class _EmailLoginFormState extends State<EmailLoginForm> {
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  value.validateLogin(
+                  value.emailLogin(
                       _emailController.text, _passwordController.text);
                   Navigator.pop(context);
                 }
