@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:rss_feed/screens/login_screen.dart';
+import 'package:rss_feed/themes/theme_manager.dart';
+import 'package:rss_feed/themes/themes.dart';
 import 'firebase/firebase_main.dart';
 import 'firebase/firebase_options.dart';
 import './screens/email_login_screen.dart';
@@ -14,8 +16,33 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+ThemeManager _themeManager = ThemeManager();
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void dispose() {
+    _themeManager.removeListener(themeListener);
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _themeManager.addListener(themeListener);
+    super.initState();
+  }
+
+  themeListener() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +50,9 @@ class MyApp extends StatelessWidget {
       create: (context) => FirebaseMain(),
       child: MaterialApp(
         title: 'Rss Feed',
-        theme: ThemeData(
-          backgroundColor: Colors.black,
-        ),
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: _themeManager.themeMode,
         home: const MyHomePage(),
       ),
     );
@@ -45,8 +72,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('RSS Feed'),
+        actions: [
+          Switch(
+            value: _themeManager.themeMode == ThemeMode.dark,
+            onChanged: (newValue) {
+              _themeManager.toggleTheme(newValue);
+              setState(() {});
+            },
+          ),
+        ],
       ),
-      backgroundColor: Colors.black,
       body: Consumer<FirebaseMain>(
         builder: (context, value, _) {
           Future.delayed(Duration.zero, () async {

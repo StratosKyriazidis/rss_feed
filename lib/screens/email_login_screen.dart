@@ -8,10 +8,9 @@ class EmailLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 1,
+      initialIndex: 0,
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.green,
         appBar: AppBar(
           title: const Text(
             'RSS Feed',
@@ -19,12 +18,8 @@ class EmailLogin extends StatelessWidget {
           ),
           bottom: const TabBar(
             tabs: [
-              Tab(
-                text: 'Login',
-              ),
-              Tab(
-                text: 'Sign Up',
-              ),
+              Tab(text: 'Login'),
+              Tab(text: 'Sign Up'),
             ],
           ),
         ),

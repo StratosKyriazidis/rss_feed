@@ -25,63 +25,85 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FirebaseMain>(builder: (context, value, _) {
-      return Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Enter your email',
+    final _mediaQueryData = MediaQuery.of(context);
+    return Consumer<FirebaseMain>(
+      builder: (context, value, _) {
+        return Form(
+          key: _formKey,
+          child: Center(
+            child: Container(
+              constraints: BoxConstraints.tight(
+                Size.square(_mediaQueryData.size.height / 3),
               ),
-              keyboardType: TextInputType.emailAddress,
-              validator: (newValue) => validateEmail(newValue),
-            ),
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Enter your password',
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Enter your email',
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (newValue) => validateEmail(newValue),
+                  ),
+                  const SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Enter your password',
+                    ),
+                    obscureText: true,
+                    validator: (newValue) {
+                      if (newValue == null || newValue.length < 6) {
+                        return 'Password must be over 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: _confirmController,
+                    decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Confirm password'),
+                    obscureText: true,
+                    validator: (newValue) {
+                      if (newValue == null ||
+                          newValue != _passwordController.text) {
+                        return 'Passwords must match';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        value.emailSignup(
+                            _emailController.text, _passwordController.text);
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text('Sign up'),
+                        SizedBox(width: 10.0),
+                        Icon(Icons.arrow_circle_up_outlined),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              obscureText: true,
-              validator: (newValue) {
-                if (newValue == null || newValue.length < 6) {
-                  return 'Password must be over 6 characters';
-                }
-                return null;
-              },
             ),
-            TextFormField(
-              controller: _confirmController,
-              decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Confirm password'),
-              obscureText: true,
-              validator: (newValue) {
-                if (newValue == null || newValue != _passwordController.text) {
-                  return 'Passwords must match';
-                }
-                return null;
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  value.emailSignup(
-                      _emailController.text, _passwordController.text);
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Sign up'),
-            ),
-          ],
-        ),
-      );
-    });
+          ),
+        );
+      },
+    );
   }
 }
 

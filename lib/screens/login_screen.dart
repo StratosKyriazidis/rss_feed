@@ -15,14 +15,25 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        LoginButton(string: 'Sign in Anonymously', onTap: anonymous),
-        LoginButton(string: 'Sign in with Email', onTap: emailPassword),
-        LoginButton(string: 'Sign in with Google', onTap: google),
-      ],
+    final _mediaQueryData = MediaQuery.of(context);
+    return Center(
+      child: Container(
+        constraints: BoxConstraints.tight(
+          Size.square(_mediaQueryData.size.height / 3),
+        ),
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            LoginButton(string: 'Sign in Anonymously', onTap: anonymous),
+            const SizedBox(height: 20.0),
+            LoginButton(string: 'Sign in with Email', onTap: emailPassword),
+            const SizedBox(height: 20.0),
+            LoginButton(string: 'Sign in with Google', onTap: google),
+          ],
+        ),
+      ),
     );
   }
 }

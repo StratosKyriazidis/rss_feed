@@ -9,14 +9,11 @@ class LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.purple,
-      child: TextButton(
-        onPressed: onTap,
-        child: Text(
-          string,
-          style: const TextStyle(color: Colors.white),
-        ),
+    return TextButton(
+      onPressed: onTap,
+      style: Theme.of(context).textButtonTheme.style,
+      child: Text(
+        string,
       ),
     );
   }
