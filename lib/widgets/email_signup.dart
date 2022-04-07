@@ -27,13 +27,13 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
   Widget build(BuildContext context) {
     final _mediaQueryData = MediaQuery.of(context);
     return Consumer<FirebaseMain>(
-      builder: (context, value, _) {
+      builder: (context, authState, _) {
         return Form(
           key: _formKey,
           child: Center(
             child: Container(
               constraints: BoxConstraints.tight(
-                Size.square(_mediaQueryData.size.height / 3),
+                Size.square(_mediaQueryData.size.height / 2),
               ),
               padding: const EdgeInsets.all(10.0),
               child: Column(
@@ -43,48 +43,49 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
                   TextFormField(
                     controller: _emailController,
                     decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: OutlineInputBorder(),
                       labelText: 'Enter your email',
                     ),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (newValue) => validateEmail(newValue),
+                    validator: (value) => validateEmail(value),
                   ),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 10.0),
                   TextFormField(
                     controller: _passwordController,
                     decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
+                      border: OutlineInputBorder(),
                       labelText: 'Enter your password',
                     ),
                     obscureText: true,
-                    validator: (newValue) {
-                      if (newValue == null || newValue.length < 6) {
+                    validator: (value) {
+                      if (value == null || value.length < 6) {
                         return 'Password must be over 6 characters';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 10.0),
                   TextFormField(
                     controller: _confirmController,
                     decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
+                        border: OutlineInputBorder(),
                         labelText: 'Confirm password'),
                     obscureText: true,
-                    validator: (newValue) {
-                      if (newValue == null ||
-                          newValue != _passwordController.text) {
+                    validator: (value) {
+                      if (value == null || value != _passwordController.text) {
                         return 'Passwords must match';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 10.0),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        value.emailSignup(
-                            _emailController.text, _passwordController.text);
+                        authState.emailSignup(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
                         Navigator.pop(context);
                       }
                     },
@@ -112,7 +113,9 @@ String? validateEmail(String? value) {
       r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
       r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
       r"{0,253}[a-zA-Z0-9])?)*$";
+
   RegExp regex = RegExp(pattern);
+
   if (value == null || value.isEmpty || !regex.hasMatch(value)) {
     return 'Enter a valid email address';
   } else {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:rss_feed/screens/add_feed_screen.dart';
 import 'package:rss_feed/screens/login_screen.dart';
 import 'package:rss_feed/themes/theme_manager.dart';
 import 'package:rss_feed/themes/themes.dart';
@@ -80,32 +81,65 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {});
             },
           ),
+          Consumer<FirebaseMain>(builder: (context, authState, _) {
+            Future.delayed(Duration.zero, () async {
+              authState.checkLoginStatus();
+            });
+            return Visibility(
+              visible: authState.loggedIn != null && authState.loggedIn == true,
+              child: IconButton(
+                onPressed: () => authState.signOut(),
+                icon: const Icon(Icons.logout_rounded),
+              ),
+              replacement: const SizedBox(width: 50.0),
+            );
+          }),
         ],
       ),
       body: Consumer<FirebaseMain>(
-        builder: (context, value, _) {
+        builder: (context, authState, _) {
           Future.delayed(Duration.zero, () async {
-            value.checkLoginStatus();
+            authState.checkLoginStatus();
           });
-          if (value.loggedIn == false) {
+          if (authState.loggedIn == false) {
             return LoginScreen(
-              anonymous: value.callAnonymousSignin,
+              anonymous: authState.callAnonymousSignin,
               emailPassword: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const EmailLogin()),
                 );
               },
-              google: value.callGoogleSignin,
+              google: authState.callGoogleSignin,
             );
           } else {
-            return Center(
-              child: ElevatedButton(
-                onPressed: () => value.signOut(),
-                child: const Text('Sign out'),
-              ),
-            );
+            return Container();
           }
+        },
+      ),
+      floatingActionButton: Consumer<FirebaseMain>(
+        builder: (context, authState, _) {
+          Future.delayed(Duration.zero, () async {
+            authState.checkLoginStatus();
+          });
+          return Visibility(
+            visible: authState.loggedIn != null && authState.loggedIn == true,
+            child: ElevatedButton(
+              onPressed: (() {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddFeed()),
+                );
+              }),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.rss_feed_outlined),
+                  Icon(Icons.add_outlined),
+                ],
+              ),
+            ),
+          );
         },
       ),
     );

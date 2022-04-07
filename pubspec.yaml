@@ -39,6 +39,8 @@ dependencies:
   firebase_core: ^1.12.0
   provider: ^6.0.2
   google_sign_in: ^5.2.4
+  feed_finder: ^1.0.9
+  webfeed: ^0.7.0
 
 dev_dependencies:
   flutter_test:
