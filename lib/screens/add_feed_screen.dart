@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:feed_finder/feed_finder.dart';
-import 'package:webfeed/webfeed.dart';
 
 class AddFeed extends StatefulWidget {
   const AddFeed({Key? key}) : super(key: key);
@@ -52,7 +51,6 @@ class _AddFeedState extends State<AddFeed> {
                         if (_formkey.currentState!.validate()) {
                           List<String> feed =
                               await FeedFinder.scrape(_urlController.text);
-                          print(feed[0]);
                         }
                       },
                       child: Row(

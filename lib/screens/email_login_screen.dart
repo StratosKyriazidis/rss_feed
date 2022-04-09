@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/email_login.dart';
-import '../widgets/email_signup.dart';
+import 'package:rss_feed/widgets/email_login.dart';
+import 'package:rss_feed/widgets/email_signup.dart';
 
 class EmailLogin extends StatelessWidget {
   const EmailLogin({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ class EmailLogin extends StatelessWidget {
           ),
           bottom: const TabBar(
             tabs: [
-              Tab(text: 'Login'),
+              Tab(text: 'Log in'),
               Tab(text: 'Sign Up'),
             ],
           ),

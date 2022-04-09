@@ -1,13 +1,20 @@
+// General imports
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:rss_feed/screens/add_feed_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+// Local imports
+
+// Screens
 import 'package:rss_feed/screens/login_screen.dart';
-import 'package:rss_feed/themes/theme_manager.dart';
+import 'package:rss_feed/screens/add_feed_screen.dart';
+import 'package:rss_feed/screens/email_login_screen.dart';
+// Themes
 import 'package:rss_feed/themes/themes.dart';
-import 'firebase/firebase_main.dart';
-import 'firebase/firebase_options.dart';
-import './screens/email_login_screen.dart';
+import 'package:rss_feed/themes/theme_manager.dart';
+// Firebase Authentication
+import 'package:rss_feed/firebase/firebase_main.dart';
+import 'package:rss_feed/firebase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,59 +77,54 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('RSS Feed'),
-        actions: [
-          Switch(
-            value: _themeManager.themeMode == ThemeMode.dark,
-            onChanged: (newValue) {
-              _themeManager.toggleTheme(newValue);
-              setState(() {});
-            },
-          ),
-          Consumer<FirebaseMain>(builder: (context, authState, _) {
-            Future.delayed(Duration.zero, () async {
-              authState.checkLoginStatus();
-            });
-            return Visibility(
-              visible: authState.loggedIn != null && authState.loggedIn == true,
-              child: IconButton(
-                onPressed: () => authState.signOut(),
-                icon: const Icon(Icons.logout_rounded),
+    return Consumer<FirebaseMain>(
+      builder: (context, authState, _) {
+        Future.delayed(Duration.zero, () async {
+          authState.checkLoginStatus();
+        });
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text('RSS Feed'),
+                Icon(Icons.rss_feed_outlined),
+              ],
+            ),
+            actions: [
+              Switch(
+                value: _themeManager.themeMode == ThemeMode.dark,
+                onChanged: (newValue) {
+                  _themeManager.toggleTheme(newValue);
+                  setState(() {});
+                },
               ),
-              replacement: const SizedBox(width: 50.0),
-            );
-          }),
-        ],
-      ),
-      body: Consumer<FirebaseMain>(
-        builder: (context, authState, _) {
-          Future.delayed(Duration.zero, () async {
-            authState.checkLoginStatus();
-          });
-          if (authState.loggedIn == false) {
-            return LoginScreen(
-              anonymous: authState.callAnonymousSignin,
-              emailPassword: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const EmailLogin()),
-                );
-              },
-              google: authState.callGoogleSignin,
-            );
-          } else {
-            return Container();
-          }
-        },
-      ),
-      floatingActionButton: Consumer<FirebaseMain>(
-        builder: (context, authState, _) {
-          Future.delayed(Duration.zero, () async {
-            authState.checkLoginStatus();
-          });
-          return Visibility(
+              Visibility(
+                visible:
+                    authState.loggedIn != null && authState.loggedIn == true,
+                child: IconButton(
+                  onPressed: () => authState.signOut(),
+                  icon: const Icon(Icons.logout_rounded),
+                ),
+                replacement: const SizedBox(width: 50.0),
+              ),
+            ],
+          ),
+          body: authState.loggedIn != null && authState.loggedIn == false
+              ? LoginScreen(
+                  anonymous: authState.callAnonymousSignin,
+                  emailPassword: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const EmailLogin()),
+                    );
+                  },
+                  google: authState.callGoogleSignin,
+                )
+              : Container(),
+          floatingActionButton: Visibility(
             visible: authState.loggedIn != null && authState.loggedIn == true,
             child: ElevatedButton(
               onPressed: (() {
@@ -139,9 +141,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

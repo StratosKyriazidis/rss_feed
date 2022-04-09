@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../firebase/firebase_main.dart';
+import 'package:rss_feed/firebase/firebase_main.dart';
 import 'package:provider/provider.dart';
 
 class EmailLoginForm extends StatefulWidget {
