@@ -6,9 +6,9 @@ import 'package:firebase_core/firebase_core.dart';
 // Local imports
 
 // Screens
-import 'package:rss_feed/screens/login_screen.dart';
+import 'package:rss_feed/screens/signin_screen.dart';
 import 'package:rss_feed/screens/add_feed_screen.dart';
-import 'package:rss_feed/screens/email_login_screen.dart';
+import 'package:rss_feed/screens/email_signin_screen.dart';
 // Themes
 import 'package:rss_feed/themes/themes.dart';
 import 'package:rss_feed/themes/theme_manager.dart';
@@ -112,13 +112,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
           body: authState.loggedIn != null && authState.loggedIn == false
-              ? LoginScreen(
+              ? SigninScreen(
                   anonymous: authState.callAnonymousSignin,
                   emailPassword: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const EmailLogin()),
+                          builder: (context) => const EmailSignin()),
                     );
                   },
                   google: authState.callGoogleSignin,
@@ -130,7 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: (() {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddFeed()),
+                  MaterialPageRoute(
+                      builder: (context) => const AddFeedScreen()),
                 );
               }),
               child: Row(

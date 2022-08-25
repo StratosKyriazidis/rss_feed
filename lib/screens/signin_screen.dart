@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rss_feed/widgets/login_button.dart';
+import 'package:rss_feed/widgets/signin_button.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen(
+class SigninScreen extends StatelessWidget {
+  const SigninScreen(
       {Key? key,
       required this.anonymous,
       required this.emailPassword,
@@ -26,11 +26,11 @@ class LoginScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            LoginButton(string: 'Sign in Anonymously', onTap: anonymous),
+            SigninButton(string: 'Sign in Anonymously', onTap: anonymous),
             const SizedBox(height: 20.0),
-            LoginButton(string: 'Sign in with Email', onTap: emailPassword),
+            SigninButton(string: 'Sign in with Email', onTap: emailPassword),
             const SizedBox(height: 20.0),
-            LoginButton(string: 'Sign in with Google', onTap: google),
+            SigninButton(string: 'Sign in with Google', onTap: google),
           ],
         ),
       ),

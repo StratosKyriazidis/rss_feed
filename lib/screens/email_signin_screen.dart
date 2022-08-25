@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:rss_feed/widgets/email_login.dart';
+import 'package:rss_feed/widgets/email_signin.dart';
 import 'package:rss_feed/widgets/email_signup.dart';
 
-class EmailLogin extends StatelessWidget {
-  const EmailLogin({Key? key}) : super(key: key);
+class EmailSignin extends StatelessWidget {
+  const EmailSignin({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class EmailLogin extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
-            EmailLoginForm(),
+            EmailSigninForm(),
             EmailSignupForm(),
           ],
         ),

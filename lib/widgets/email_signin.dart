@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:rss_feed/firebase/firebase_main.dart';
 import 'package:provider/provider.dart';
 
-class EmailLoginForm extends StatefulWidget {
-  const EmailLoginForm({Key? key}) : super(key: key);
+class EmailSigninForm extends StatefulWidget {
+  const EmailSigninForm({Key? key}) : super(key: key);
 
   @override
-  State<EmailLoginForm> createState() => _EmailLoginFormState();
+  State<EmailSigninForm> createState() => _EmailSigninFormState();
 }
 
-class _EmailLoginFormState extends State<EmailLoginForm> {
+class _EmailSigninFormState extends State<EmailSigninForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();

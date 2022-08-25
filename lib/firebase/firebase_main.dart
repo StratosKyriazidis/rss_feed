@@ -11,7 +11,8 @@ class FirebaseMain with ChangeNotifier {
 
   bool? loggedIn;
   FirebaseAuth? auth;
-  var db = FirebaseFirestore.instance;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  UserCredential? userCredential;
 
   FirebaseMain() {
     auth = FirebaseAuth.instance;
@@ -29,14 +30,17 @@ class FirebaseMain with ChangeNotifier {
   }
 
   Future<void> anonymousSignin() async {
-    UserCredential userCredential = await auth!.signInAnonymously();
-    final user = <String, dynamic>{'id': userCredential.user?.uid};
+    userCredential = await auth!.signInAnonymously();
 
+    final user = <String, dynamic>{
+      'id': userCredential?.user?.uid,
+      'channels': [],
+    };
     DocumentReference docIdRef =
-        db.collection("users").doc(userCredential.user?.uid);
+        db.collection("users").doc(userCredential?.user?.uid);
     docIdRef.get().then((doc) {
       if (!doc.exists) {
-        db.collection("users").doc(userCredential.user?.uid).set(user);
+        db.collection("users").doc(userCredential?.user?.uid).set(user);
       }
     });
   }
@@ -48,15 +52,18 @@ class FirebaseMain with ChangeNotifier {
 
   Future<String> emailLogin(String email, String password) async {
     try {
-      UserCredential userCredential = await auth!
+      userCredential = await auth!
           .signInWithEmailAndPassword(email: email, password: password);
-      final user = <String, dynamic>{'id': userCredential.user?.uid};
 
+      final user = <String, dynamic>{
+        'id': userCredential?.user?.uid,
+        'channels': [],
+      };
       DocumentReference docIdRef =
-          db.collection("users").doc(userCredential.user?.uid);
+          db.collection("users").doc(userCredential?.user?.uid);
       docIdRef.get().then((doc) {
         if (!doc.exists) {
-          db.collection("users").doc(userCredential.user?.uid).set(user);
+          db.collection("users").doc(userCredential?.user?.uid).set(user);
         }
       });
     } on FirebaseAuthException catch (e) {
@@ -72,15 +79,18 @@ class FirebaseMain with ChangeNotifier {
 
   Future<String> emailSignup(String email, String password) async {
     try {
-      UserCredential userCredential = await auth!
+      userCredential = await auth!
           .createUserWithEmailAndPassword(email: email, password: password);
-      final user = <String, dynamic>{'id': userCredential.user?.uid};
 
+      final user = <String, dynamic>{
+        'id': userCredential?.user?.uid,
+        'channels': [],
+      };
       DocumentReference docIdRef =
-          db.collection("users").doc(userCredential.user?.uid);
+          db.collection("users").doc(userCredential?.user?.uid);
       docIdRef.get().then((doc) {
         if (!doc.exists) {
-          db.collection("users").doc(userCredential.user?.uid).set(user);
+          db.collection("users").doc(userCredential?.user?.uid).set(user);
         }
       });
     } on FirebaseAuthException catch (e) {
@@ -115,14 +125,17 @@ class FirebaseMain with ChangeNotifier {
   }
 
   Future<void> callGoogleSignin() async {
-    var userCredential = await signInWithGoogle();
-    final user = <String, dynamic>{'id': userCredential.user?.uid};
+    userCredential = await signInWithGoogle();
 
+    final user = <String, dynamic>{
+      'id': userCredential?.user?.uid,
+      'channels': [],
+    };
     DocumentReference docIdRef =
-        db.collection("users").doc(userCredential.user?.uid);
+        db.collection("users").doc(userCredential?.user?.uid);
     docIdRef.get().then((doc) {
       if (!doc.exists) {
-        db.collection("users").doc(userCredential.user?.uid).set(user);
+        db.collection("users").doc(userCredential?.user?.uid).set(user);
       }
     });
 
