@@ -136,8 +136,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: const [
-                  Icon(Icons.rss_feed_outlined),
                   Icon(Icons.add_outlined),
+                  Icon(Icons.rss_feed_outlined),
                 ],
               ),
             ),
