@@ -1,5 +1,8 @@
+import 'dart:io';
+import 'package:http/io_client.dart';
 import 'package:flutter/material.dart';
 import 'package:feed_finder/feed_finder.dart';
+import 'package:webfeed/webfeed.dart';
 
 class AddFeed extends StatefulWidget {
   const AddFeed({Key? key}) : super(key: key);
@@ -93,7 +96,7 @@ String? isValidUrl(String? value) {
   RegExp regex = RegExp(pattern);
 
   if (value == null || value.isEmpty || !regex.hasMatch(value)) {
-    return 'Enter a valid email address';
+    return 'Enter a valid URL address';
   } else {
     return null;
   }

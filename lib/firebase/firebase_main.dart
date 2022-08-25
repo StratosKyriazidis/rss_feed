@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ class FirebaseMain with ChangeNotifier {
 
   bool? loggedIn;
   FirebaseAuth? auth;
+  var db = FirebaseFirestore.instance;
 
   FirebaseMain() {
     auth = FirebaseAuth.instance;
@@ -28,6 +30,15 @@ class FirebaseMain with ChangeNotifier {
 
   Future<void> anonymousSignin() async {
     UserCredential userCredential = await auth!.signInAnonymously();
+    final user = <String, dynamic>{'id': userCredential.user?.uid};
+
+    DocumentReference docIdRef =
+        db.collection("users").doc(userCredential.user?.uid);
+    docIdRef.get().then((doc) {
+      if (!doc.exists) {
+        db.collection("users").doc(userCredential.user?.uid).set(user);
+      }
+    });
   }
 
   void callAnonymousSignin() {
@@ -39,6 +50,15 @@ class FirebaseMain with ChangeNotifier {
     try {
       UserCredential userCredential = await auth!
           .signInWithEmailAndPassword(email: email, password: password);
+      final user = <String, dynamic>{'id': userCredential.user?.uid};
+
+      DocumentReference docIdRef =
+          db.collection("users").doc(userCredential.user?.uid);
+      docIdRef.get().then((doc) {
+        if (!doc.exists) {
+          db.collection("users").doc(userCredential.user?.uid).set(user);
+        }
+      });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return 'user-not-found';
@@ -54,6 +74,15 @@ class FirebaseMain with ChangeNotifier {
     try {
       UserCredential userCredential = await auth!
           .createUserWithEmailAndPassword(email: email, password: password);
+      final user = <String, dynamic>{'id': userCredential.user?.uid};
+
+      DocumentReference docIdRef =
+          db.collection("users").doc(userCredential.user?.uid);
+      docIdRef.get().then((doc) {
+        if (!doc.exists) {
+          db.collection("users").doc(userCredential.user?.uid).set(user);
+        }
+      });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         return 'weak-password';
@@ -85,8 +114,18 @@ class FirebaseMain with ChangeNotifier {
     return await auth!.signInWithCredential(credential);
   }
 
-  void callGoogleSignin() {
-    signInWithGoogle();
+  Future<void> callGoogleSignin() async {
+    var userCredential = await signInWithGoogle();
+    final user = <String, dynamic>{'id': userCredential.user?.uid};
+
+    DocumentReference docIdRef =
+        db.collection("users").doc(userCredential.user?.uid);
+    docIdRef.get().then((doc) {
+      if (!doc.exists) {
+        db.collection("users").doc(userCredential.user?.uid).set(user);
+      }
+    });
+
     notifyListeners();
   }
 
