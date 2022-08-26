@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:feed_finder/feed_finder.dart';
@@ -5,7 +7,12 @@ import 'package:provider/provider.dart';
 import 'package:rss_feed/firebase/firebase_main.dart';
 
 class AddFeedScreen extends StatefulWidget {
-  const AddFeedScreen({Key? key}) : super(key: key);
+  AddFeedScreen({
+    Key? key,
+    this.warning = false,
+  }) : super(key: key);
+
+  bool warning;
 
   @override
   State<AddFeedScreen> createState() => _AddFeedScreenState();
@@ -24,6 +31,7 @@ class _AddFeedScreenState extends State<AddFeedScreen> {
   @override
   Widget build(BuildContext context) {
     final _mediaQueryData = MediaQuery.of(context);
+
     return Consumer<FirebaseMain>(
       builder: (context, authState, _) {
         return Card(
@@ -43,7 +51,8 @@ class _AddFeedScreenState extends State<AddFeedScreen> {
                       controller: _urlController,
                       decoration: const InputDecoration(
                         border: UnderlineInputBorder(),
-                        labelText: 'Put a url here i.e https://www.example.com',
+                        labelText:
+                            'Insert url here i.e https://www.example.com',
                       ),
                       keyboardType: TextInputType.url,
                       validator: (value) => isValidUrl(value),
@@ -52,14 +61,28 @@ class _AddFeedScreenState extends State<AddFeedScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Text('Cancel'),
+                              SizedBox(width: 10.0),
+                              Icon(Icons.cancel_outlined),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
                           onPressed: () async {
                             if (_formkey.currentState!.validate()) {
                               List<String> feed =
                                   await FeedFinder.scrape(_urlController.text);
-                              print('$feed');
+
                               DocumentReference docIdRef = authState.db
                                   .collection("channels")
                                   .doc(_urlController.text.split('//')[1]);
+
                               if (feed.isNotEmpty) {
                                 docIdRef.get().then((doc) {
                                   if (doc.exists) {
@@ -85,7 +108,19 @@ class _AddFeedScreenState extends State<AddFeedScreen> {
                                     });
                                   }
                                 });
+                              } else {
+                                setState(() {
+                                  widget.warning = true;
+                                });
+
+                                Timer(
+                                  const Duration(seconds: 3),
+                                  () => setState(() {
+                                    widget.warning = false;
+                                  }),
+                                );
                               }
+                              print('Feed: $feed');
                             }
                           },
                           child: Row(
@@ -97,20 +132,21 @@ class _AddFeedScreenState extends State<AddFeedScreen> {
                             ],
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Text('Cancel'),
-                              SizedBox(width: 10.0),
-                              Icon(Icons.cancel_outlined),
-                            ],
-                          ),
-                        ),
                       ],
+                    ),
+                    Visibility(
+                      visible: widget.warning,
+                      child: ColoredBox(
+                        color: Colors.red,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.warning),
+                            SizedBox(width: 20, height: 40),
+                            Text('Could not find feed on the url provided!'),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
