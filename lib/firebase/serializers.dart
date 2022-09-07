@@ -8,7 +8,7 @@ part 'serializers.g.dart';
 
 const kDocumentReferenceField = 'Document__Reference__Field';
 
-@SerializersFor(const [
+@SerializersFor([
   UserRecord,
 ])
 final Serializers serializers = (_$serializers.toBuilder()
@@ -19,6 +19,15 @@ final Serializers serializers = (_$serializers.toBuilder()
 extension SerializerExtensions on Serializers {
   Map<String, dynamic> toFirestore<T>(Serializer<T> serializer, T object) =>
       mapToFirestore(serializeWith(serializer, object) as Map<String, dynamic>);
+}
+
+T? safeGet<T>(T Function() func, [Function(dynamic)? reportError]) {
+  try {
+    return func();
+  } catch (e) {
+    reportError?.call(e);
+  }
+  return null;
 }
 
 class DocumentReferenceSerializer
