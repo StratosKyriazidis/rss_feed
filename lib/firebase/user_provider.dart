@@ -8,7 +8,7 @@ import 'package:rss_feed/firebase/user_record.dart';
 import 'backend.dart';
 
 class UserProvider with ChangeNotifier {
-  static UserProvider of(BuildContext context, {listen: true}) {
+  static UserProvider of(BuildContext context, {listen = true}) {
     return Provider.of<UserProvider>(context, listen: listen);
   }
 
@@ -38,7 +38,7 @@ class UserProvider with ChangeNotifier {
     _userStreamSubscription = queryUserRecord(
       queryBuilder: (rec) => rec,
     ).listen((data) {
-      this._usersRecord = data;
+      _usersRecord = data;
       isLoading = false;
       notifyListeners();
     });
